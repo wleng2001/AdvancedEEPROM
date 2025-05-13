@@ -17,13 +17,13 @@
 */
 #define AlarmPath
 
-struct{
+typedef struct{
   uint8_t hour;
   uint8_t minute;
   uint8_t schedule; //MSB = 1 -> alarm turn on LSB = monday
 } alarm;
 
-struct{
+typedef struct{
   char ssid[32];
   char password[63];
 }APData;
@@ -32,6 +32,8 @@ class AdvancedEEPROM{
   private:
   uint16_t EEPROMSize;
   bool init = 0;
+  uint8_t alarmCount = 0;
+  uint8_t WIFICount = 0;
 
   void setAlarmCount(uint8_t count);
   void setWiFICount(uint8_t count);
@@ -44,6 +46,12 @@ class AdvancedEEPROM{
   
   uint8_t readAlarmCount();
   uint8_t readWIFICount();
+
+  alarm readAlarm(uint8_t alarmNumber);
+  void setAlarm(uint8_t alarmNumber, alarm al);
+  APData readWIFI(uint8_t WIFINumber);
+  void setWIFI(uint8_t WIFINumber, APData AP);
+
 };
 
 #endif

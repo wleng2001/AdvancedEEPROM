@@ -2,7 +2,7 @@
 #include <stdint.h>
 #include "AdvancedEEPROM.h"
 
-AdvancedEEPROM::~AdvancedEEPROM(uint16_t EEPROMSize, uint8_t alarmCount, uint8_t WIFIcount){
+AdvancedEEPROM::AdvancedEEPROM(uint16_t EEPROMSize, uint8_t alarmCount, uint8_t WIFIcount){
   this->EEPROMSize=EEPROMSize;
   EEPROM.begin(EEPROMSize);
   this->init = this->initialized();
@@ -12,6 +12,9 @@ AdvancedEEPROM::~AdvancedEEPROM(uint16_t EEPROMSize, uint8_t alarmCount, uint8_t
     uint8_t reading = EEPROM.read(0);
     EEPROM.write(0, reading|0b10000000);
     this->init = true;
+  }else{
+    this->alarmCount = this->readAlarmCount();
+    this->WIFICount = this->readWIFICount();
   }
 }
 
@@ -34,11 +37,16 @@ bool AdvancedEEPROM::initialized(){
 }
 
 uint8_t AdvancedEEPROM::readAlarmCount(){
-  return reading = (EEPROM.reaad(0)>>2)&0b00000111;
+  return (EEPROM.read(0)>>2)&0b00011100;
 
 }
 
-uint8_t AdvancedEEPROM::setAlarmCount(uint8_t count){
+uint8_t AdvancedEEPROM::readWIFICount(){
+  return (EEPROM.read(0))&0b00000011;
+
+}
+
+void AdvancedEEPROM::setAlarmCount(uint8_t count){
   if(!init && count<8){
     uint8_t reading = EEPROM.read(0);
     reading = (reading&0b11100011)|(count<<2);
@@ -46,9 +54,16 @@ uint8_t AdvancedEEPROM::setAlarmCount(uint8_t count){
   }
 }
 
-uint8_t AdvancedEEPROM::setWiFICount(uint8_t count){
+void AdvancedEEPROM::setWiFICount(uint8_t count){
   if(!init && count<4){
     uint8_t reading = EEPROM.read(0);
     reading = (reading&0b11111100)|(count);
     EEPROM.write(0, reading);
   }
+}
+
+void AdvancedEEPROM::setAlarm(uint8_t alarmNumber, alarm al){
+  if(alarmNumber<this->alarmCount){
+    EEPROM.put(33+alarmNumber, al);
+  }
+}
