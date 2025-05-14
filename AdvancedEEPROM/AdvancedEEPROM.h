@@ -2,6 +2,7 @@
 #ifndef AdvancedEEPROM_h
 #define AdvancedEEPROM_h
 #include <EEPROM.h>
+#include <HardwareSerial.h>
 
 /*
 1. byte usage (LSBF)
@@ -10,12 +11,20 @@
   4 to 2 - alarms quantity //it can't be bigger than 7
   1 to 0 - network quantity + AP //it can't be bigger than 3
 2. byte time zone in format
-  7 - 1 = + 0 = -
+  7 - 1 = - 0 = +
   6 to 1 - entire value
   0 - 1 = +0.5 
 3.-32. NTP server address
 */
-#define AlarmPath
+#define alarmPath 33
+#define timeZonePath 1
+
+enum WIFIMode{
+  STAM = 0,
+  APM = 1,
+  APpSTAM = 2,
+  turOffM = 3,
+};
 
 typedef struct{
   uint8_t hour;
@@ -26,6 +35,7 @@ typedef struct{
 typedef struct{
   char ssid[32];
   char password[63];
+  uint8_t priority;
 }APData;
 
 class AdvancedEEPROM{
@@ -43,9 +53,15 @@ class AdvancedEEPROM{
   void startConnection();
   void endConnection();
   bool initialized();
+  void deInitialize();
   
+  void setWIFIMode(WIFIMode WM);
+  WIFIMode readWIFIMode();
   uint8_t readAlarmCount();
   uint8_t readWIFICount();
+
+  void setTimeZone(float tZ);
+  float readTimeZone();
 
   alarm readAlarm(uint8_t alarmNumber);
   void setAlarm(uint8_t alarmNumber, alarm al);
