@@ -17,7 +17,7 @@ AdvancedEEPROM::AdvancedEEPROM(uint16_t EEPROMSize, uint8_t alarmCount, uint8_t 
     this->alarmCount = this->readAlarmCount();
     this->WIFICount = this->readWIFICount();
   }
-  this->NTPServerPath = this->alarmCount*3+this->WIFICount*95 + 2;
+  this->NTPServerPath = this->alarmCount*3+this->WIFICount*96 + 2;
   this->endConnection();
 }
 
@@ -178,9 +178,15 @@ void AdvancedEEPROM::setAlarm(uint8_t alarmNumber, alarm al){
 APData AdvancedEEPROM::readWIFI(uint8_t WIFINumber){
   APData AD;
   if(WIFINumber<this->WIFICount){
-    EEPROM.get(WIFINumber*95+alarmPath+this->alarmCount*3, T &t)
+    EEPROM.get(WIFINumber*96+alarmPath+this->alarmCount*3, AD);
   }
   return AD;
+}
+
+void AdvancedEEPROM::setWIFI(uint8_t WIFINumber, APData AP){
+  if(WIFINumber<this->WIFICount){
+    EEPROM.put(WIFINumber*96+alarmPath+this->alarmCount*3, AP);
+  }
 }
 
 void AdvancedEEPROM::setNTPName(char *name, uint8_t length){
@@ -203,6 +209,5 @@ char* AdvancedEEPROM::readNTPName(){
     name[i-1] = EEPROM.read(this->NTPServerPath+i);
   }
   name[this->NTPServerLength] = '\0';
-  Serial.println(name);
   return name;
 }

@@ -14,6 +14,19 @@ void setup() {
   al0.hour = 12;
   al0.minute = 21;
   al0.schedule = 0b10000001;
+  alarm al[4];
+  for(uint8_t i = 0; i<4; i++){
+    al[i].hour = al0.hour+i;
+    al[i].minute = al0.minute+i;
+    al[i].schedule = al0.schedule+i; 
+  }
+
+  APData AP[4];
+  for(uint8_t i = 0; i<4; i++){
+    ("T3sting"+String(i)).toCharArray(AP[i].ssid, 32);
+    ("Str0ngPa33word"+String(i)).toCharArray(AP[i].password, 63);
+    AP[i].priority = 1+i;
+  }
 
   Serial.begin(115200);
 
@@ -21,7 +34,12 @@ void setup() {
   Serial.println("Memory first initialization: "+printBool(aE.firstInitialization));
   if(aE.firstInitialization==true){
     aE.setWIFIMode(turOffM);
-    aE.setAlarm(0, al0);
+    for(uint8_t i = 0; i<aE.readAlarmCount(); i++){
+      aE.setAlarm(i, al[i]);
+    }
+    for(uint8_t i = 0; i<aE.readWIFICount(); i++){
+      aE.setWIFI(i, AP[i]);
+    }
     aE.setTimeZone(2);
     char NTP[] = "tempus1.gum.gov.pl";
     aE.setNTPName(NTP, 18);
@@ -40,8 +58,14 @@ void setup() {
 
 
   aE.startConnection();
-  alarm tAl0 = aE.readAlarm(0);
-  Serial.println(String(tAl0.hour)+":"+String(tAl0.minute)+" "+String(tAl0.schedule));
+  for(uint8_t i = 0; i<aE.readAlarmCount(); i++){
+    alarm tAl0 = aE.readAlarm(i);
+    Serial.println(String(i)+"."+String(tAl0.hour)+":"+String(tAl0.minute)+" "+String(tAl0.schedule));
+  }
+  for(uint8_t i = 0; i<aE.readWIFICount(); i++){
+    APData AP = aE.readWIFI(i);
+    Serial.println(String(i)+"."+AP.ssid+"\t"+AP.password+"\t"+String(AP.priority));
+  }
   aE.endConnection(true);
 }
 
