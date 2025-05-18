@@ -13,9 +13,11 @@ AdvancedEEPROM::AdvancedEEPROM(uint16_t EEPROMSize, uint8_t alarmCount, uint8_t 
     EEPROM.write(0, reading|0b10000000);
     this->init = true;
   }else{
+    this->firstInitialization = false;
     this->alarmCount = this->readAlarmCount();
     this->WIFICount = this->readWIFICount();
   }
+  this->NTPServerPath = this->alarmCount*3+this->WIFICount*95 + 2;
   this->endConnection();
 }
 
@@ -24,6 +26,16 @@ void AdvancedEEPROM::startConnection(){
 }
 
 void AdvancedEEPROM::endConnection(){
+  EEPROM.commit();
+  EEPROM.end();
+}
+
+void AdvancedEEPROM::endConnection(bool print){
+  for(unsigned int i = 0; i<this->NTPServerPath+this->NTPServerLength; i++){
+    Serial.print(EEPROM.read(i));
+    Serial.print(";");
+  }
+  Serial.println("");
   EEPROM.commit();
   EEPROM.end();
 }
@@ -41,6 +53,12 @@ void AdvancedEEPROM::deInitialize(){
   uint8_t reading = EEPROM.read(0);
   EEPROM.write(0, reading&0b01111111);
   this->init = 0;
+}
+
+void AdvancedEEPROM::clearMemory(){
+  for(unsigned int i = 0; i<this->EEPROMSize;i++){
+    EEPROM.write(i,0);
+  } 
 }
 
 void AdvancedEEPROM::setWIFIMode(WIFIMode WM){
@@ -84,7 +102,7 @@ uint8_t AdvancedEEPROM::readAlarmCount(){
 }
 
 uint8_t AdvancedEEPROM::readWIFICount(){
-  return (EEPROM.read(0))&0b00000011;
+  return ((EEPROM.read(0))&0b00000011)+1;
 
 }
 
@@ -93,6 +111,7 @@ void AdvancedEEPROM::setAlarmCount(uint8_t count){
     uint8_t reading = EEPROM.read(0);
     reading = (reading&0b11100011)|(count<<2);
     EEPROM.write(0, reading);
+    this->alarmCount = count;
   }
 }
 
@@ -101,6 +120,7 @@ void AdvancedEEPROM::setWiFICount(uint8_t count){
     uint8_t reading = EEPROM.read(0);
     reading = (reading&0b11111100)|(count);
     EEPROM.write(0, reading);
+    this->WIFICount = count+1;
   }
 }
 
@@ -117,7 +137,7 @@ void AdvancedEEPROM::setTimeZone(float tZ){
     writing = writing|1;
   }
   uint8_t var = abs(tZ);
-  writing = var<<1 | writing;
+  writing = (var<<1) | writing;
   EEPROM.write(timeZonePath, writing);
 }
 
@@ -136,13 +156,40 @@ float AdvancedEEPROM::readTimeZone(){
 alarm AdvancedEEPROM::readAlarm(uint8_t alarmNumber){
   alarm al;
   if(alarmNumber < this->alarmCount){
-    EEPROM.get(alarmPath+alarmNumber, al);
+    al.hour = EEPROM.read(alarmPath+alarmNumber*3);
+    al.minute = EEPROM.read(alarmPath+alarmNumber*3+1);
+    al.schedule = EEPROM.read(alarmPath+alarmNumber*3+2);
   }
   return al;
 }
 
 void AdvancedEEPROM::setAlarm(uint8_t alarmNumber, alarm al){
   if(alarmNumber<this->alarmCount){
-    EEPROM.put(alarmPath+alarmNumber, al);
+    EEPROM.write(alarmPath+alarmNumber*3, al.hour);
+    EEPROM.write(alarmPath+alarmNumber*3+1, al.minute);
+    EEPROM.write(alarmPath+alarmNumber*3+2, al.schedule);
   }
 }
+/*
+void AdvancedEEPROM::setNTPName(char *name, uint8_t length){
+  Serial.println("Server path: "+String(this->NTPServerPath));
+  this->NTPServerLength = length;
+  EEPROM.write(this->NTPServerPath, length);
+  for(unsigned int i = 1; i<length+1; i++){
+    EEPROM.write(this->NTPServerPath+i, name[i-1]);
+  }
+}
+
+uint8_t AdvancedEEPROM::readNTPLength(){
+  this->NTPServerLength = EEPROM.read(this->NTPServerPath);
+  return this->NTPServerLength;
+}
+
+char* AdvancedEEPROM::readNTPName(){
+  Serial.println("Server path: "+String(this->NTPServerPath));
+  char name[this->NTPServerLength];
+  for(uint8_t i = 1; i< this->NTPServerLength+1; i++){
+    name[i-1] = EEPROM.read(this->NTPServerPath+i);
+  }
+  return name;
+}*/

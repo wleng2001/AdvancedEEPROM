@@ -5,19 +5,26 @@
 #include <HardwareSerial.h>
 
 /*
-1. byte usage (LSBF)
+0. byte usage (LSBF)
   7 - memory initialized 1 = true
   6 to 5 - WI-FI mode 0 = STA, 1 = AP, 2 = AP+STA 3 = turn off
   4 to 2 - alarms quantity //it can't be bigger than 7
   1 to 0 - network quantity + AP //it can't be bigger than 3
-2. byte time zone in format
+1. byte time zone in format
   7 - 1 = - 0 = +
   6 to 1 - entire value
   0 - 1 = +0.5 
-3.-32. NTP server address
+2. alarm data start
+  0. - hour
+  1. - minute
+  2. - schedule 
+    MSB 1 = turn on
+    LSB - monday
+
+alarms+WIFI length+3.-32. NTP server address
 */
-#define alarmPath 33
-#define timeZonePath 1
+const uint8_t alarmPath = 2;
+const uint8_t timeZonePath = 1;
 
 enum WIFIMode{
   STAM = 0,
@@ -44,6 +51,8 @@ class AdvancedEEPROM{
   bool init = 0;
   uint8_t alarmCount = 0;
   uint8_t WIFICount = 0;
+  unsigned int NTPServerPath = 0;
+  uint8_t NTPServerLength = 0;
 
   void setAlarmCount(uint8_t count);
   void setWiFICount(uint8_t count);
@@ -52,8 +61,13 @@ class AdvancedEEPROM{
   AdvancedEEPROM(uint16_t EEPROMSize, uint8_t alarmCount, uint8_t WIFIcount);
   void startConnection();
   void endConnection();
+  void endConnection(bool print);
   bool initialized();
+  bool firstInitialization = true;
   void deInitialize();
+
+  uint16_t availableMemory();
+  void clearMemory();
   
   void setWIFIMode(WIFIMode WM);
   WIFIMode readWIFIMode();
@@ -67,6 +81,12 @@ class AdvancedEEPROM{
   void setAlarm(uint8_t alarmNumber, alarm al);
   APData readWIFI(uint8_t WIFINumber);
   void setWIFI(uint8_t WIFINumber, APData AP);
+
+  /*
+  void setNTPName(char* name, uint8_t length);
+  uint8_t readNTPLength();
+  char* readNTPName();
+  */
 
 };
 

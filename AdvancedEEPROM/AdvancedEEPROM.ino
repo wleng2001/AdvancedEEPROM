@@ -18,28 +18,51 @@ void setup() {
   Serial.begin(115200);
 
   aE.startConnection();
-
-  Serial.println("Memory initialization: "+printBool(aE.initialized()));
-  if(!aE.initialized()){
+  Serial.println("Memory first initialization: "+printBool(aE.firstInitialization));
+  if(aE.firstInitialization==true){
     aE.setWIFIMode(turOffM);
     aE.setAlarm(0, al0);
+    aE.setTimeZone(2);
+    //char NTP[] = "tempus1.gum.gov.pl";
+    //aE.setNTPName(NTP, 18);
+    aE.endConnection(true);
+    aE.startConnection();
   }
-  aE.setTimeZone(2);
   Serial.println("WIFI mode: "+String(aE.readWIFIMode()));
   Serial.println("Alarm count: "+String(aE.readAlarmCount()));
   Serial.println("WIFI count: "+String(aE.readWIFICount()));
   Serial.println("Time zone: "+String(aE.readTimeZone(), 1));
-
-  aE.endConnection();
+  /*
+  Serial.println("NTP server: "+String(aE.readNTPName()));
+  Serial.println("NTP server length: "+String(aE.readNTPLength()));
+  */
+  aE.endConnection(true);
 
 
   aE.startConnection();
   alarm tAl0 = aE.readAlarm(0);
   Serial.println(String(tAl0.hour)+":"+String(tAl0.minute)+" "+String(tAl0.schedule));
-  aE.endConnection();
+  aE.endConnection(true);
 }
 
-void loop() {
-  // put your main code here, to run repeatedly:
+String input = "";
+bool aEState = aE.initialized();
 
+void loop() {
+  if(Serial.available()){
+    input = Serial.readStringUntil('\n');
+  }
+  if(input=="clr"){
+    input = "";
+    aE.startConnection();
+    aE.deInitialize();
+    aE.clearMemory();
+    aE.endConnection();
+  }
+  aE.startConnection();
+  if(aEState!=aE.initialized()){
+    Serial.println("Serial status changed: "+printBool(aE.initialized()));
+    aEState = aE.initialized();
+  }
+  aE.endConnection();
 }
