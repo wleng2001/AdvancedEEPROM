@@ -175,6 +175,14 @@ void AdvancedEEPROM::setAlarm(uint8_t alarmNumber, alarm al){
   }
 }
 
+APData AdvancedEEPROM::readWIFI(uint8_t WIFINumber){
+  APData AD;
+  if(WIFINumber<this->WIFICount){
+    EEPROM.get(WIFINumber*95+alarmPath+this->alarmCount*3, T &t)
+  }
+  return AD;
+}
+
 void AdvancedEEPROM::setNTPName(char *name, uint8_t length){
   this->NTPServerLength = length+1;
   EEPROM.write(this->NTPServerPath, length+1);
