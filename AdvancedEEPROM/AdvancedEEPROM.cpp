@@ -55,6 +55,10 @@ void AdvancedEEPROM::deInitialize(){
   this->init = 0;
 }
 
+uint16_t AdvancedEEPROM::usedMemory(){
+  return this->NTPServerPath+NTPServerLength;
+}
+
 void AdvancedEEPROM::clearMemory(){
   for(unsigned int i = 0; i<this->EEPROMSize;i++){
     EEPROM.write(i,0);
@@ -170,12 +174,11 @@ void AdvancedEEPROM::setAlarm(uint8_t alarmNumber, alarm al){
     EEPROM.write(alarmPath+alarmNumber*3+2, al.schedule);
   }
 }
-/*
+
 void AdvancedEEPROM::setNTPName(char *name, uint8_t length){
-  Serial.println("Server path: "+String(this->NTPServerPath));
-  this->NTPServerLength = length;
-  EEPROM.write(this->NTPServerPath, length);
-  for(unsigned int i = 1; i<length+1; i++){
+  this->NTPServerLength = length+1;
+  EEPROM.write(this->NTPServerPath, length+1);
+  for(unsigned int i = 1; i<length+2; i++){
     EEPROM.write(this->NTPServerPath+i, name[i-1]);
   }
 }
@@ -186,10 +189,12 @@ uint8_t AdvancedEEPROM::readNTPLength(){
 }
 
 char* AdvancedEEPROM::readNTPName(){
-  Serial.println("Server path: "+String(this->NTPServerPath));
-  char name[this->NTPServerLength];
-  for(uint8_t i = 1; i< this->NTPServerLength+1; i++){
+  delete [] name;
+  this->name = new char[this->NTPServerLength+1];
+  for(uint8_t i = 1; i< this->NTPServerLength; i++){
     name[i-1] = EEPROM.read(this->NTPServerPath+i);
   }
+  name[this->NTPServerLength] = '\0';
+  Serial.println(name);
   return name;
-}*/
+}

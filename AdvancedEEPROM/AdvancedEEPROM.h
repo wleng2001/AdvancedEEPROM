@@ -53,6 +53,7 @@ class AdvancedEEPROM{
   uint8_t WIFICount = 0;
   unsigned int NTPServerPath = 0;
   uint8_t NTPServerLength = 0;
+  char* name;
 
   void setAlarmCount(uint8_t count);
   void setWiFICount(uint8_t count);
@@ -66,7 +67,7 @@ class AdvancedEEPROM{
   bool firstInitialization = true;
   void deInitialize();
 
-  uint16_t availableMemory();
+  uint16_t usedMemory();
   void clearMemory();
   
   void setWIFIMode(WIFIMode WM);
@@ -82,11 +83,11 @@ class AdvancedEEPROM{
   APData readWIFI(uint8_t WIFINumber);
   void setWIFI(uint8_t WIFINumber, APData AP);
 
-  /*
+  
   void setNTPName(char* name, uint8_t length);
   uint8_t readNTPLength();
   char* readNTPName();
-  */
+  
 
 };
 

@@ -23,8 +23,8 @@ void setup() {
     aE.setWIFIMode(turOffM);
     aE.setAlarm(0, al0);
     aE.setTimeZone(2);
-    //char NTP[] = "tempus1.gum.gov.pl";
-    //aE.setNTPName(NTP, 18);
+    char NTP[] = "tempus1.gum.gov.pl";
+    aE.setNTPName(NTP, 18);
     aE.endConnection(true);
     aE.startConnection();
   }
@@ -32,10 +32,10 @@ void setup() {
   Serial.println("Alarm count: "+String(aE.readAlarmCount()));
   Serial.println("WIFI count: "+String(aE.readWIFICount()));
   Serial.println("Time zone: "+String(aE.readTimeZone(), 1));
-  /*
-  Serial.println("NTP server: "+String(aE.readNTPName()));
+  
   Serial.println("NTP server length: "+String(aE.readNTPLength()));
-  */
+  Serial.println("NTP server: "+String(aE.readNTPName()));
+  
   aE.endConnection(true);
 
 
