@@ -70,6 +70,7 @@ void setup() {
     APData AP = aE.readWIFI(i);
     Serial.println(String(i)+".\t"+AP.ssid+"\t"+AP.password+"\t"+String(AP.priority));
   }
+  Serial.println("Used memory: "+String(aE.usedMemory()));
   aE.endConnection(true);
 }
 

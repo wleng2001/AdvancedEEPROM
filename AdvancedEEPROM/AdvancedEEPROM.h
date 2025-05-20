@@ -85,7 +85,7 @@ class AdvancedEEPROM{
   float readTimeZone();
 
   char* readPassword();
-  void setPassword(char* pass, uint8_t length);
+  void setPassword(char* pass, uint8_t length); //can't be wider than 30 chars
 
   alarm readAlarm(uint8_t alarmNumber);
   void setAlarm(uint8_t alarmNumber, alarm al);
