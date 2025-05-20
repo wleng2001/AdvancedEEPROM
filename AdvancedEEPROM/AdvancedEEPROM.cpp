@@ -128,6 +128,24 @@ void AdvancedEEPROM::setWiFICount(uint8_t count){
   }
 }
 
+void AdvancedEEPROM::writeCharArray(uint16_t path, char* s, uint8_t length){
+  EEPROM.write(path, length+1);
+  for(unsigned int i = 1; i<length+2; i++){
+    EEPROM.write(path+i, s[i-1]);
+  }
+}
+
+char* AdvancedEEPROM::readCharArray(uint16_t path){
+  delete [] name;
+  uint8_t length = EEPROM.read(path);
+  this->name = new char[length];
+  for(uint8_t i = 1; i< length; i++){
+    name[i-1] = EEPROM.read(path+i);
+  }
+  name[length-1] = '\0';
+  return name;
+}
+
 void AdvancedEEPROM::setTimeZone(float tZ){
   if(tZ>63 || tZ<-63){
     return;
@@ -155,6 +173,16 @@ float AdvancedEEPROM::readTimeZone(){
     var=var*-1;
   }
   return var;
+}
+
+char* AdvancedEEPROM::readPassword(){
+  return this->readCharArray(passPath);
+}
+
+void AdvancedEEPROM::setPassword(char* pass, uint8_t length){
+  if(length<=30){
+    this->writeCharArray(passPath, pass, length);
+  }
 }
 
 alarm AdvancedEEPROM::readAlarm(uint8_t alarmNumber){
@@ -191,10 +219,7 @@ void AdvancedEEPROM::setWIFI(uint8_t WIFINumber, APData AP){
 
 void AdvancedEEPROM::setNTPName(char *name, uint8_t length){
   this->NTPServerLength = length+1;
-  EEPROM.write(this->NTPServerPath, length+1);
-  for(unsigned int i = 1; i<length+2; i++){
-    EEPROM.write(this->NTPServerPath+i, name[i-1]);
-  }
+  this->writeCharArray(this->NTPServerPath, name, length);
 }
 
 uint8_t AdvancedEEPROM::readNTPLength(){
@@ -203,11 +228,5 @@ uint8_t AdvancedEEPROM::readNTPLength(){
 }
 
 char* AdvancedEEPROM::readNTPName(){
-  delete [] name;
-  this->name = new char[this->NTPServerLength+1];
-  for(uint8_t i = 1; i< this->NTPServerLength; i++){
-    name[i-1] = EEPROM.read(this->NTPServerPath+i);
-  }
-  name[this->NTPServerLength] = '\0';
-  return name;
+  return this->readCharArray(this->NTPServerPath);
 }

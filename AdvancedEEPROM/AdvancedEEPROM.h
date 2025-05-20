@@ -13,8 +13,9 @@
 1. byte time zone in format
   7 - 1 = - 0 = +
   6 to 1 - entire value
-  0 - 1 = +0.5 
-2. alarm data start
+  0 - 1 = +0.5
+2.-32. user password
+33. alarm data start
   0. - hour
   1. - minute
   2. - schedule 
@@ -23,7 +24,9 @@
 
 alarms+WIFI length+3.-32. NTP server address
 */
-const uint8_t alarmPath = 2;
+
+const uint8_t passPath = 2;
+const uint8_t alarmPath = 33;
 const uint8_t timeZonePath = 1;
 
 enum WIFIMode{
@@ -57,6 +60,9 @@ class AdvancedEEPROM{
 
   void setAlarmCount(uint8_t count);
   void setWiFICount(uint8_t count);
+
+  void writeCharArray(uint16_t path, char* s, uint8_t length);
+  char* readCharArray(uint16_t path);
   
   public:
   AdvancedEEPROM(uint16_t EEPROMSize, uint8_t alarmCount, uint8_t WIFIcount);
@@ -78,12 +84,14 @@ class AdvancedEEPROM{
   void setTimeZone(float tZ);
   float readTimeZone();
 
+  char* readPassword();
+  void setPassword(char* pass, uint8_t length);
+
   alarm readAlarm(uint8_t alarmNumber);
   void setAlarm(uint8_t alarmNumber, alarm al);
   APData readWIFI(uint8_t WIFINumber);
   void setWIFI(uint8_t WIFINumber, APData AP);
 
-  
   void setNTPName(char* name, uint8_t length);
   uint8_t readNTPLength();
   char* readNTPName();
