@@ -2,6 +2,7 @@
 #ifndef AdvancedEEPROM_h
 #define AdvancedEEPROM_h
 #include <EEPROM.h>
+#include <Arduino.h>
 #include <math.h>
 /*
 0. byte usage (LSBF)

@@ -1,0 +1,40 @@
+#types
+aE KEYWORD1
+AdvancedEEPROM KEYWORD1
+
+#structures
+
+alarm   KEYWORD3
+APData  KEYWORD3
+
+#functions
+
+startConnection KEYWORD2
+endConnection   KEYWORD2
+initialized KEYWORD2
+firstInitialization KEYWORD2
+deInitialize    KEYWORD2
+
+usedMemory  KEYWORD2
+clearMemory KEYWORD2
+
+setWIFIMode KEYWORD2
+readWIFIMode    KEYWORD2
+
+readAlarmCount  KEYWORD2
+readWIFICount   KEYWORD2
+
+setTimeZone KEYWORD2
+readTimeZone    KEYWORD2
+
+readPassword    KEYWORD2
+setPassword KEYWORD2
+    
+readAlarm KEYWORD2
+setAlarm    KEYWORD2
+readWIFI KEYWORD2
+setWIFI KEYWORD2
+
+setNTPName KEYWORD2
+readNTPLength KEYWORD2
+readNTPName KEYWORD2

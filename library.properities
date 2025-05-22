@@ -1,0 +1,11 @@
+name=AdcancedEEPROM
+version=1.0.0
+author=Kamil Grodzki <kamilgrodzki5@gmail.com>
+maintainer=Kamil Grodzki <kamilgrodzki5@gmail.com>
+sentence=It's library for ESP8266, which allows to save alarms, wifi data, user password, time zone and NTP server name in memory.
+paragraph=More on the github webpage
+category=Data Storage
+url=https://github.com/wleng2001/AdvancedEEPROM
+architectures= esp8266
+includes=AdcancedEEPROM.h
+depends=arduino
