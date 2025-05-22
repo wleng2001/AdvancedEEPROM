@@ -1,5 +1,3 @@
-#include "EEPROM.h"
-#include <stdint.h>
 #include "AdvancedEEPROM.h"
 
 AdvancedEEPROM::AdvancedEEPROM(uint16_t EEPROMSize, uint8_t alarmCount, uint8_t WIFIcount){
@@ -23,9 +21,11 @@ AdvancedEEPROM::AdvancedEEPROM(uint16_t EEPROMSize, uint8_t alarmCount, uint8_t 
 
 void AdvancedEEPROM::startConnection(){
   EEPROM.begin(this->EEPROMSize);
+  name = new char[0];
 }
 
 void AdvancedEEPROM::endConnection(){
+  delete [] name;
   EEPROM.commit();
   EEPROM.end();
 }
@@ -127,12 +127,12 @@ void AdvancedEEPROM::writeCharArray(uint16_t path, char* s, uint8_t length){
 
 char* AdvancedEEPROM::readCharArray(uint16_t path){
   uint8_t length = EEPROM.read(path);
+  delete [] name;
   this->name = new char[length];
   for(uint8_t i = 1; i< length; i++){
     name[i-1] = EEPROM.read(path+i);
   }
   name[length-1] = '\0';
-  delete [] name;
   return name;
 }
 

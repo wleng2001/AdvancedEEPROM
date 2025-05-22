@@ -1,4 +1,3 @@
-#include <stdint.h>
 #ifndef AdvancedEEPROM_h
 #define AdvancedEEPROM_h
 #include <EEPROM.h>
