@@ -30,16 +30,6 @@ void AdvancedEEPROM::endConnection(){
   EEPROM.end();
 }
 
-void AdvancedEEPROM::endConnection(bool print){
-  for(unsigned int i = 0; i<this->NTPServerPath+this->NTPServerLength; i++){
-    Serial.print(EEPROM.read(i));
-    Serial.print(";");
-  }
-  Serial.println("");
-  EEPROM.commit();
-  EEPROM.end();
-}
-
 bool AdvancedEEPROM::initialized(){
   uint8_t reading = EEPROM.read(0);
   if(reading>>7==1){
@@ -136,13 +126,13 @@ void AdvancedEEPROM::writeCharArray(uint16_t path, char* s, uint8_t length){
 }
 
 char* AdvancedEEPROM::readCharArray(uint16_t path){
-  delete [] name;
   uint8_t length = EEPROM.read(path);
   this->name = new char[length];
   for(uint8_t i = 1; i< length; i++){
     name[i-1] = EEPROM.read(path+i);
   }
   name[length-1] = '\0';
+  delete [] name;
   return name;
 }
 

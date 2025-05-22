@@ -1,7 +1,7 @@
-#include "AdvancedEEPROM.h"
+#include <AdvancedEEPROM.h>
 AdvancedEEPROM aE(1024, 4, 3);
 
-String printBool(bool value){
+String printBool(bool value){ //fucntion to print value boolean variable
   if(value){
     return "true";
   }else{
@@ -10,18 +10,18 @@ String printBool(bool value){
 }
 
 void setup() {
-  alarm al0;
+  alarm al0; //create alarm struct, which will be template for data to save in memory
   al0.hour = 12;
   al0.minute = 21;
   al0.schedule = 0b10000001;
   alarm al[4];
-  for(uint8_t i = 0; i<4; i++){
+  for(uint8_t i = 0; i<4; i++){ //create array of alarm struct
     al[i].hour = al0.hour+i;
     al[i].minute = al0.minute+i;
     al[i].schedule = al0.schedule+i; 
   }
 
-  APData AP[4];
+  APData AP[4]; //create array of APData struct
   for(uint8_t i = 0; i<4; i++){
     ("T3sting"+String(i)).toCharArray(AP[i].ssid, 32);
     ("Str0ngPa33w0rd"+String(i)).toCharArray(AP[i].password, 63);
@@ -30,9 +30,9 @@ void setup() {
 
   Serial.begin(115200);
 
-  aE.startConnection();
+  aE.startConnection(); //You must do it if you want read and write something to memory. It can be used once before block of these functions.
   Serial.println("Memory first initialization: "+printBool(aE.firstInitialization));
-  if(aE.firstInitialization==true){
+  if(aE.firstInitialization==true){ //If memory is first time initialized save data to memory
     aE.setWIFIMode(turOffM);
     aE.setTimeZone(2);
     aE.setPassword("Very 3tr0ng pa33w0rd", 20);
@@ -45,9 +45,10 @@ void setup() {
     
     char NTP[] = "tempus1.gum.gov.pl";
     aE.setNTPName(NTP, 18);
-    aE.endConnection(true);
+    aE.endConnection(); //end connection - save changes in memory
     aE.startConnection();
   }
+  //write data from memory
   Serial.println("WIFI mode: "+String(aE.readWIFIMode()));
   Serial.println("Alarm count: "+String(aE.readAlarmCount()));
   Serial.println("WIFI count: "+String(aE.readWIFICount()));
@@ -58,7 +59,7 @@ void setup() {
   Serial.println("NTP server length: "+String(aE.readNTPLength()));
   Serial.println("NTP server: "+String(aE.readNTPName()));
   
-  aE.endConnection(true);
+  aE.endConnection(); 
 
 
   aE.startConnection();
@@ -71,7 +72,7 @@ void setup() {
     Serial.println(String(i)+".\t"+AP.ssid+"\t"+AP.password+"\t"+String(AP.priority));
   }
   Serial.println("Used memory: "+String(aE.usedMemory()));
-  aE.endConnection(true);
+  aE.endConnection();
 }
 
 String input = "";
@@ -81,7 +82,7 @@ void loop() {
   if(Serial.available()){
     input = Serial.readStringUntil('\n');
   }
-  if(input=="clr"){
+  if(input=="clr"){ //if write clr in terminal then esp clear memory and deinitializes memory
     input = "";
     aE.startConnection();
     aE.deInitialize();

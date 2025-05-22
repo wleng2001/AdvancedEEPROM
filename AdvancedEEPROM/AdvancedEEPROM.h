@@ -2,8 +2,7 @@
 #ifndef AdvancedEEPROM_h
 #define AdvancedEEPROM_h
 #include <EEPROM.h>
-#include <HardwareSerial.h>
-
+#include <math.h>
 /*
 0. byte usage (LSBF)
   7 - memory initialized 1 = true
@@ -68,7 +67,6 @@ class AdvancedEEPROM{
   AdvancedEEPROM(uint16_t EEPROMSize, uint8_t alarmCount, uint8_t WIFIcount);
   void startConnection();
   void endConnection();
-  void endConnection(bool print);
   bool initialized();
   bool firstInitialization = true;
   void deInitialize();
