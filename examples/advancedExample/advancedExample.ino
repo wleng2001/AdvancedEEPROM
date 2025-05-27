@@ -28,8 +28,6 @@ void setup() {
     AP[i].priority = 1+i;
   }
 
-  Serial.begin(115200);
-
   aE.startConnection(); //You must do it if you want read and write something to memory. It can be used once before block of these functions.
   Serial.println("Memory first initialization: "+printBool(aE.firstInitialization));
   if(aE.firstInitialization==true){ //If memory is first time initialized save data to memory
@@ -88,6 +86,11 @@ void loop() {
     aE.deInitialize();
     aE.clearMemory();
     aE.endConnection();
+  }else{
+    if(input!=""){
+      Serial.println(input);
+      input = "";
+    }
   }
   aE.startConnection();
   if(aEState!=aE.initialized()){

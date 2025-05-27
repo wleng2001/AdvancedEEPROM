@@ -129,7 +129,7 @@ char* AdvancedEEPROM::readCharArray(uint16_t path){
   uint8_t length = EEPROM.read(path);
   delete [] name;
   this->name = new char[length];
-  for(uint8_t i = 1; i< length; i++){
+  for(uint8_t i = 1; i< length+1; i++){
     name[i-1] = EEPROM.read(path+i);
   }
   name[length-1] = '\0';
