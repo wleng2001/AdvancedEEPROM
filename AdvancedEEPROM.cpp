@@ -86,7 +86,7 @@ WIFIMode AdvancedEEPROM::readWIFIMode(){
     case 2:
       return APpSTAM;
     default:
-      return turOffM;
+      return turnOffM;
   }
 }
 
