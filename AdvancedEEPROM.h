@@ -32,7 +32,7 @@ enum WIFIMode{
   STAM = 0,
   APM = 1,
   APpSTAM = 2,
-  turOffM = 3,
+  turnOffM = 3,
 };
 
 typedef struct{
