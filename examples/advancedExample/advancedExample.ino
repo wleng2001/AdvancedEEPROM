@@ -10,6 +10,8 @@ String printBool(bool value){ //fucntion to print value boolean variable
 }
 
 void setup() {
+  Serial.begin(115200);
+  while(!Serial){}
   alarm al0; //create alarm struct, which will be template for data to save in memory
   al0.hour = 12;
   al0.minute = 21;
@@ -31,7 +33,7 @@ void setup() {
   aE.startConnection(); //You must do it if you want read and write something to memory. It can be used once before block of these functions.
   Serial.println("Memory first initialization: "+printBool(aE.firstInitialization));
   if(aE.firstInitialization==true){ //If memory is first time initialized save data to memory
-    aE.setWIFIMode(turOffM);
+    aE.setWIFIMode(turnOffM);
     aE.setTimeZone(2);
     aE.setPassword("Very 3tr0ng pa33w0rd", 20);
     for(uint8_t i = 0; i<aE.readAlarmCount(); i++){
@@ -40,13 +42,13 @@ void setup() {
     for(uint8_t i = 0; i<aE.readWIFICount(); i++){
       aE.setWIFI(i, AP[i]);
     }
-    
+    aE.setNTPSyncPeriod(42, 2);
     char NTP[] = "tempus1.gum.gov.pl";
     aE.setNTPName(NTP, 18);
     aE.endConnection(); //end connection - save changes in memory
     aE.startConnection();
   }
-  //write data from memory
+  //read data from memory
   Serial.println("WIFI mode: "+String(aE.readWIFIMode()));
   Serial.println("Alarm count: "+String(aE.readAlarmCount()));
   Serial.println("WIFI count: "+String(aE.readWIFICount()));
@@ -54,6 +56,8 @@ void setup() {
 
   Serial.println("Password: "+String(aE.readPassword()));
   
+  Serial.println("NTP sync period: "+String(aE.readNTPSyncPeriod()));
+  Serial.println("NTP sync unit: "+String(aE.readNTPSyncUnit()));
   Serial.println("NTP server length: "+String(aE.readNTPLength()));
   Serial.println("NTP server: "+String(aE.readNTPName()));
   

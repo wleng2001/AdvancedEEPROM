@@ -1,4 +1,4 @@
-#include "AdvancedEEPROM.h"
+#include <AdvancedEEPROM.h
 AdvancedEEPROM aE(1024, 4, 3); //initialize memory with 1024 bytes length, 4 alarm and 4 wifi (3 STA + 1 AP)
 /*
 max memory length is 4096 b
@@ -27,12 +27,12 @@ void setup() {
   }
 
   Serial.begin(115200);
-
+  while(!Serial);
   aE.startConnection(); //you must use it if before you want read something or write to memory
   Serial.println("Memory first initialization: "+String(aE.firstInitialization)); //firstInitialization give information that memory was initialized in the boot up (doesn't have write data in memory)
 
   //save data to memory
-  aE.setWIFIMode(turOffM);
+  aE.setWIFIMode(turnOffM);
   aE.setTimeZone(2); //max value -63 or 63 with accuracy to 0.5
   aE.setPassword("Very 3tr0ng pa33w0rd", 20); //Max length is 30. Second parameter informs about length of the password
 
@@ -44,6 +44,8 @@ void setup() {
     aE.setWIFI(i, AP[i]);
   }
     
+  aE.setNTPSyncPeriod(42, 2);
+
   char NTP[] = "tempus1.gum.gov.pl";
   aE.setNTPName(NTP, 18); //length limited by memory lengths and lengths of rest of the data
   aE.endConnection(); //it confirms writing data to memory
@@ -65,6 +67,8 @@ void setup() {
 
   Serial.println("Password: "+String(aE.readPassword()));
   
+  Serial.println("NTP sync period: "+String(aE.readNTPSyncPeriod()));
+  Serial.println("NTP sync unit: "+String(aE.readNTPSyncUnit()));
   Serial.println("NTP server length: "+String(aE.readNTPLength()));
   Serial.println("NTP server: "+String(aE.readNTPName()));
   
@@ -84,7 +88,6 @@ void setup() {
   aE.endConnection();
 }
 
-String napis;
 
 void loop() {
 }

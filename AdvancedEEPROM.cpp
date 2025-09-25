@@ -15,7 +15,7 @@ AdvancedEEPROM::AdvancedEEPROM(uint16_t EEPROMSize, uint8_t alarmCount, uint8_t 
     this->alarmCount = this->readAlarmCount();
     this->WIFICount = this->readWIFICount();
   }
-  this->NTPServerPath = this->alarmCount*3+this->WIFICount*96 + 2;
+  this->NTPServerPath = alarmPath+this->alarmCount*3+this->WIFICount*96+1;
   this->endConnection();
 }
 
@@ -119,20 +119,24 @@ void AdvancedEEPROM::setWiFICount(uint8_t count){
 }
 
 void AdvancedEEPROM::writeCharArray(uint16_t path, char* s, uint8_t length){
-  EEPROM.write(path, length+1);
-  for(unsigned int i = 1; i<length+2; i++){
-    EEPROM.write(path+i, s[i-1]);
+  if(length<255){
+    EEPROM.write(path, length+1);
+    for(unsigned int i = 1; i<length+2; i++){
+      EEPROM.write(path+i, s[i-1]);
+    }
   }
 }
 
 char* AdvancedEEPROM::readCharArray(uint16_t path){
   uint8_t length = EEPROM.read(path);
-  delete [] name;
-  this->name = new char[length];
-  for(uint8_t i = 1; i< length+1; i++){
-    name[i-1] = EEPROM.read(path+i);
+  if(length<255){
+    delete [] name;
+    this->name = new char[length];
+    for(uint8_t i = 1; i< length+1; i++){
+      name[i-1] = EEPROM.read(path+i);
+    }
+    name[length-1] = '\0';
   }
-  name[length-1] = '\0';
   return name;
 }
 
@@ -205,6 +209,21 @@ void AdvancedEEPROM::setWIFI(uint8_t WIFINumber, APData AP){
   if(WIFINumber<this->WIFICount){
     EEPROM.put(WIFINumber*96+alarmPath+this->alarmCount*3, AP);
   }
+}
+
+void AdvancedEEPROM::setNTPSyncPeriod(uint8_t period, uint8_t unit){
+  if(period<=63 && unit<=3){
+    period|=unit<<6;
+    EEPROM.write(this->NTPServerPath-1, period);
+  }
+}
+
+uint8_t AdvancedEEPROM::readNTPSyncPeriod(){
+  return EEPROM.read(this->NTPServerPath-1)&0b00111111;
+}
+
+uint8_t AdvancedEEPROM::readNTPSyncUnit(){
+  return (EEPROM.read(this->NTPServerPath-1)&0b11000000)>>6;
 }
 
 void AdvancedEEPROM::setNTPName(char *name, uint8_t length){

@@ -5,10 +5,10 @@
 #include <math.h>
 /*
 0. byte usage (LSBF)
-  7 - memory initialized 1 = true
-  6 to 5 - WI-FI mode 0 = STA, 1 = AP, 2 = AP+STA 3 = turn off
-  4 to 2 - alarms quantity //it can't be bigger than 7
-  1 to 0 - network quantity + AP //it can't be bigger than 3
+  7. - memory initialized 1 = true
+  6. to 5. - WI-FI mode 0 = STA, 1 = AP, 2 = AP+STA 3 = turn off
+  4. to 2. - alarms quantity //it can't be bigger than 7
+  1. to 0. - network quantity + AP //it can't be bigger than 3
 1. byte time zone in format
   7 - 1 = - 0 = +
   6 to 1 - entire value
@@ -20,8 +20,14 @@
   2. - schedule 
     MSB 1 = turn on
     LSB - monday
-
-alarms+WIFI length+3.-32. NTP server address
+alarms*3+WIFI length*96+3+32 = NTP sync period
+  LSB has lowest number
+  5.-0. period of time
+  if 7. and 6. = 0 period of time in minute
+  if 7. = 1 and 6. = 0 period of time in hours
+  if 7. and 6. = 1 period of time in days
+  
+NTP sync period+1 = NTP server address
 */
 
 const uint8_t passPath = 2;
@@ -90,6 +96,9 @@ class AdvancedEEPROM{
   APData readWIFI(uint8_t WIFINumber);
   void setWIFI(uint8_t WIFINumber, APData AP);
 
+  void setNTPSyncPeriod(uint8_t period, uint8_t unit);//period max value is 63, unit 0 = minute, 2 = hour, 3 = days
+  uint8_t readNTPSyncPeriod();
+  uint8_t readNTPSyncUnit();
   void setNTPName(char* name, uint8_t length);
   uint8_t readNTPLength();
   char* readNTPName();
